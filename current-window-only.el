@@ -100,7 +100,16 @@
   ;; finished. This prevents them from doing so.
   (advice-add
    'delete-other-windows
-   :override #'current-window-only--delete-other-windows))
+   :override #'current-window-only--delete-other-windows)
+
+  ;; Commands like `vc-git-grep', `ripgrep-regexp', and other buffers based on
+  ;; the Compilation Mode always keep their main buffer visible and jump to
+  ;; the results in another window. See how `compilation-goto-locus' calls
+  ;; `pop-to-buffer' with an explicit `'other-window' parameter. We are
+  ;; wrapping it to ignore the window specification.
+  (advice-add
+   'pop-to-buffer
+   :around #'current-window-only--pop-to-buffer))
 
 (defun current-window-only--off ()
   (dolist (item current-window-only--old-config)
@@ -112,7 +121,11 @@
 
   (advice-remove
    'delete-other-windows
-   #'current-window-only--delete-other-windows))
+   #'current-window-only--delete-other-windows)
+
+  (advice-remove
+   'pop-to-buffer
+   #'current-window-only--pop-to-buffer))
 
 (defun current-window-only--switch-to-buffer-other-window
     (buffer-or-name &optional norecord)
@@ -122,6 +135,10 @@
     (&optional window interactive)
   (ignore window)
   (ignore interactive))
+
+(defun current-window-only--pop-to-buffer (orig-fun &rest args)
+  (let ((new-args (list (first args) nil (seq-drop args 2))))
+    (apply orig-fun new-args)))
 
 ;;;; Footer
 
