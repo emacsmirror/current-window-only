@@ -60,6 +60,7 @@ you can simply ~M-x current-window-only~?
 - [[shackle][shackle]]
 - [[popwin][popwin]]
 - [[https://github.com/MArpogaus/auto-side-windows][auto-side-windows]]
+- [[https://github.com/jamescherti/single-window.el][single-window.el]]
 
 ** Tips and tricks
 
